@@ -6,22 +6,12 @@
 #include <gtkmm.h>
 
 #include "GlDrawing.h"
-#include "Crystal.h"
+#include "RayCasting.h"
 
 class Application {
 public:
 	Application( const std::string& ui_file );
 	virtual ~Application();
-
-	void test();
-	void run();
-	void create();
-	void pause();
-	void zoom();
-
-//        bool zoom( Gtk::ScrollType , double );
-
-	bool step();
 
 	void show()
 	{	win_main->show_all(); }
@@ -29,7 +19,7 @@ public:
 	void quit()
 	{	Gtk::Main::quit(); }
 protected:
-	Crystal crystal;
+	RayCasting renderer;
 
 	GlDrawingArea*glArea;
 

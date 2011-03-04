@@ -1,8 +1,5 @@
 cmake_policy(VERSION 2.6)
 
-add_subdirectory( timer )
-add_subdirectory( rng )
-
 link_directories(
 	${PROJECT_SOURCE_DIR}/lib/
 	${GTKGL_LIBRARY_DIRS}
@@ -22,8 +19,8 @@ include_directories(
 	${GTKGLEXTMM_INCLUDE_DIRS} )
 
 CUDA_ADD_LIBRARY( cuda
-	Crystal.cu 
-	CrystalKernel.cu
+	RayCasting.cu 
+	RayCastingKernel.cu
 	cuda_util
 	)
 
@@ -37,7 +34,7 @@ add_executable( raycasting
 	Application
 	)
 
-target_link_libraries( raycasting cuda gui timer rng 
+target_link_libraries( raycasting cuda gui 
 	${CUDA_LIBRARIES}
 	
 	${GTKGL_LIBRARIES}

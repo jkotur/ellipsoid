@@ -8,6 +8,7 @@
 #include <gtkmm.h>
 #include <gtkglmm.h>
 
+#include "RayCasting.h"
 #include "buffer.h"
 
 class GlDrawingArea : public Gtk::DrawingArea ,
@@ -17,12 +18,13 @@ public:
 	GlDrawingArea(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
 	virtual ~GlDrawingArea();
 
-	void setRedBuffer( BufferGl*_buf )
-	{	rbuf = _buf; }
-	void setWhiteBuffer( BufferGl*_buf )
-	{	wbuf = _buf; }
-	void setZoom( double w , double h )
-	{	boxw = w; boxh = h; }
+	void setRenderer( RayCasting*rnd )
+	{
+		renderer = rnd;
+	}
+
+	void setPixBuff( BufferGl*_buf )
+	{	pbo = _buf; }
 
 	BufferGl*bufferResize( BufferGl*buf , size_t len );
 protected:
@@ -37,8 +39,8 @@ private:
 
 	double boxw , boxh;
 
-	BufferGl*rbuf;
-	BufferGl*wbuf;
+	RayCasting*renderer;
+	BufferGl*pbo;
 	Glib::RefPtr<Gtk::Builder> refBuilder;
 };
 

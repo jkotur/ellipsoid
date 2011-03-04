@@ -24,7 +24,7 @@
 GlDrawingArea::GlDrawingArea(BaseObjectType*cobject, const Glib::RefPtr<Gtk::Builder>& builder)
 	: Gtk::DrawingArea(cobject),
 	  refBuilder(builder),
-	  rbuf(NULL) , wbuf(NULL) , boxw(INIT_BOX) , boxh(INIT_BOX)
+	  pbo(NULL) , boxw(INIT_BOX) , boxh(INIT_BOX)
 {
 	Glib::RefPtr<Gdk::GL::Config> glconfig;
 	glconfig = Gdk::GL::Config::create(
@@ -69,11 +69,12 @@ void GlDrawingArea::on_realize()
 	if (!glwindow->gl_begin(get_gl_context()))
 		return;
 
+	log_printf(DBG,"realize!!!\n");
+
 	initGLEW();
 
 	glwindow->gl_end();
 	// *** OpenGL END ***
-
 }
 
 bool GlDrawingArea::on_configure_event(GdkEventConfigure* event)
@@ -85,6 +86,8 @@ bool GlDrawingArea::on_configure_event(GdkEventConfigure* event)
 		return false;
 
 	glViewport(0, 0, get_width(), get_height());
+
+	log_printf(DBG,"%p %d %d\n",pbo,get_width(),get_height());
 
 	glwindow->gl_end();
 
@@ -122,45 +125,27 @@ void GlDrawingArea::scene_init()
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClearDepth(1.0);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	double box = boxh*WIDTH > boxw ? boxh*WIDTH : boxw ;
-	gluOrtho2D(0,box,0,box);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	if( pbo->len != get_width()*get_height() )
+	{
+		bufferResize( pbo , get_width()*get_height() );
+		renderer->resize( get_width() , get_height() );
+	}
 }
 
 void GlDrawingArea::scene_draw()
 {
-	glEnableClientState(GL_VERTEX_ARRAY);
+	log_printf(DBG,"cudownie\n");
 
-	if( rbuf && rbuf->len > 0 ) {
-		glBindBuffer(GL_ARRAY_BUFFER,rbuf->vbo);
-		glVertexPointer(2,GL_FLOAT,0,NULL);
-		glBindBuffer(GL_ARRAY_BUFFER,0);
-
-		glColor3f(1.0,0.0,0.0);
-		glDrawArrays(GL_POINTS,0,rbuf->len);
-	}
-
-	if( wbuf && wbuf->len > 0 ) {
-		glBindBuffer(GL_ARRAY_BUFFER,wbuf->vbo);
-		glVertexPointer(2,GL_FLOAT,0,NULL);
-		glBindBuffer(GL_ARRAY_BUFFER,0);
-
-		glColor3f(1.0,1.0,1.0);
-		glDrawArrays(GL_POINTS,0,wbuf->len);
-	}
-
-	glDisableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER,pbo->pbo);
+	glDrawPixels(get_width(),get_height(),GL_BGR,GL_UNSIGNED_BYTE,NULL);
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER,0);
 }
 
 BufferGl*GlDrawingArea::bufferResize( BufferGl*buf , size_t len )
 {
-	if( !buf ) buf = new BufferGl();
+	if( !buf ) return NULL;
 	if( buf->real_len >= len ) {
 		buf->len = len;
 		return buf;
@@ -172,20 +157,22 @@ BufferGl*GlDrawingArea::bufferResize( BufferGl*buf , size_t len )
 		return false;
 
 	if( buf->len ) {
-		cudaGLUnregisterBufferObject( buf->vbo );
-		glDeleteBuffers(1,&buf->vbo);
+		cudaGLUnregisterBufferObject( buf->pbo );
+		glDeleteBuffers(1,&buf->pbo);
 	}
 
-	glGenBuffers(1,&buf->vbo);
-	glBindBuffer(GL_ARRAY_BUFFER,buf->vbo);
-	glBufferData(GL_ARRAY_BUFFER,
-			sizeof(float)*len*2.0,
+	log_printf(DBG,"cze\n");
+
+	glGenBuffers(1,&buf->pbo);
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER,buf->pbo);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER,
+			sizeof(GLubyte)*len*3,
 			NULL,GL_STREAM_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glBindBuffer(GL_PIXEL_UNPACK_BUFFER,0);
 
-	log_printf(DBG,"Created buffer %d with size %d\n",buf->vbo,len);
+	log_printf(DBG,"Created buffer %d with size %d\n",buf->pbo,len);
 
-	cudaGLRegisterBufferObject(buf->vbo);
+	cudaGLRegisterBufferObject(buf->pbo);
 	CUT_CHECK_ERROR( "GlDrawingArea::bufferResize: register buffer" );
 
 	buf->real_len = buf->len = len;

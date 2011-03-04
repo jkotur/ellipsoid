@@ -13,10 +13,10 @@
 #include "logger.h"
 
 struct BufferGl {
-	BufferGl() : vbo(0) , len(0) , real_len(0) {}
-	~BufferGl() { if( real_len ) glDeleteBuffers(1,&vbo); }
+	BufferGl() : pbo(0) , len(0) , real_len(0) {}
+	~BufferGl() { if( real_len ) glDeleteBuffers(1,&pbo); }
 
-	GLuint vbo;
+	GLuint pbo;
 	size_t len;
 	size_t real_len;
 };
