@@ -18,6 +18,7 @@ public:
 	
 private:
 	int width , height , num ;
+	int step;
 
 	BufferGl pbo;
 };

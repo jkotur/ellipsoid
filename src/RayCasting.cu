@@ -16,7 +16,7 @@
 #include "constants.h"
 
 RayCasting::RayCasting()
-	: width(0) , height(0)
+	: width(0) , height(0) , step(1)
 {
 }
 
@@ -41,6 +41,23 @@ void RayCasting::resize( int w , int h )
 
 void RayCasting::render_frame()
 {
+	step = 4;
+	unsigned int quads = pow(2,step);
+	dim3 threads = std::ceil( (float)width / (float)quads  );
+	dim3 blocks  = dim3( quads , quads );
+
+	GLubyte*d_ub;
+
+	cudaGLMapBufferObject( (void**)&d_ub , pbo.pbo );
+	CUT_CHECK_ERROR("RayCasting::init::cudaGLMapBufferObject");
+
+	log_printf(DBG,"width %d\theight %d\n",width,height);
+	log_printf(DBG,"thr: %d\tblk: %d %d\n",threads.x,blocks.x,blocks.y);
+
+	render_elipsoid<<< blocks , threads >>>( d_ub , std::ceil( (float)width / (float)quads  ) , std::ceil( (float)height / (float)quads  ), width , height  , quads );
+
+	cudaGLUnmapBufferObject( pbo.pbo );
+	CUT_CHECK_ERROR("RayCasting::init::cudaGLUnmapBufferObject");
 }
 
 void RayCasting::updateGl()

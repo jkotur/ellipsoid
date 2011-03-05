@@ -129,8 +129,12 @@ void GlDrawingArea::scene_init()
 
 	if( pbo->len != get_width()*get_height() )
 	{
-		bufferResize( pbo , get_width()*get_height() );
-		renderer->resize( get_width() , get_height() );
+		int w = ceil((float)get_width()/4.0f)*4;
+		int h = get_height();
+
+		bufferResize( pbo , w*h );
+
+		renderer->resize( w,h );
 	}
 }
 
@@ -138,8 +142,15 @@ void GlDrawingArea::scene_draw()
 {
 	log_printf(DBG,"cudownie\n");
 
+	renderer->render_frame();
+
+	// FIXME: why the fuck with must be multiplication of 4???
+
+	int w = ceil((float)get_width()/4.0f)*4;
+	int h = get_height();
+
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER,pbo->pbo);
-	glDrawPixels(get_width(),get_height(),GL_BGR,GL_UNSIGNED_BYTE,NULL);
+	glDrawPixels(w,h,GL_BGR,GL_UNSIGNED_BYTE,NULL);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER,0);
 }
 
@@ -160,8 +171,6 @@ BufferGl*GlDrawingArea::bufferResize( BufferGl*buf , size_t len )
 		cudaGLUnregisterBufferObject( buf->pbo );
 		glDeleteBuffers(1,&buf->pbo);
 	}
-
-	log_printf(DBG,"cze\n");
 
 	glGenBuffers(1,&buf->pbo);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER,buf->pbo);
