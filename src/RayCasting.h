@@ -10,7 +10,7 @@ public:
 	virtual ~RayCasting();
 
 	void resize( int width , int height );
-	void render_frame();
+	bool render_frame();
 	void updateGl();
 
 	BufferGl*getPixBuff()

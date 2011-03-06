@@ -39,9 +39,8 @@ void RayCasting::resize( int w , int h )
 	CUT_CHECK_ERROR("RayCasting::init::cudaGLUnmapBufferObject");
 }
 
-void RayCasting::render_frame()
+bool RayCasting::render_frame()
 {
-	step = 4;
 	unsigned int quads = pow(2,step);
 	dim3 threads = std::ceil( (float)width / (float)quads  );
 	dim3 blocks  = dim3( quads , quads );
@@ -58,6 +57,13 @@ void RayCasting::render_frame()
 
 	cudaGLUnmapBufferObject( pbo.pbo );
 	CUT_CHECK_ERROR("RayCasting::init::cudaGLUnmapBufferObject");
+
+	if( quads < width || quads < height ) {
+		step++;
+		return false;
+	}
+
+	return true;
 }
 
 void RayCasting::updateGl()

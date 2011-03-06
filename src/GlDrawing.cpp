@@ -142,7 +142,8 @@ void GlDrawingArea::scene_draw()
 {
 	log_printf(DBG,"cudownie\n");
 
-	renderer->render_frame();
+	if( ! renderer->render_frame() )
+		Glib::signal_timeout().connect_once(sigc::mem_fun(*this,&GlDrawingArea::queue_draw),1000);
 
 	// FIXME: why the fuck with must be multiplication of 4???
 
