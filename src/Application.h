@@ -26,9 +26,12 @@ protected:
 	Gtk::Window	*win_main;
 	Gtk::Statusbar	*statbar;
 
-	Gtk::SpinButton	*sp_width;
-	Gtk::SpinButton	*sp_height;
-	Gtk::SpinButton	*sp_step;
+	Gtk::SpinButton	*sp_a;
+	Gtk::SpinButton	*sp_b;
+	Gtk::SpinButton	*sp_c;
+	Gtk::SpinButton	*sp_m;
+
+	void on_m_changed();
 
 	Glib::RefPtr<Gtk::ListStore> ls_time;
 

@@ -10,7 +10,24 @@
 
 typedef unsigned int uint;
 
-__global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , uint h , uint n )
+__device__ float len( const float3& v )
+{
+	return sqrt(v.x*v.x+v.y*v.y+v.z*v.z);
+}
+
+__device__ void operator/=( float3& v , float s )
+{
+	v.x /= s;
+	v.y /= s;
+	v.z /= s;
+}
+
+__device__ float dot( const float3& a , const float3& b )
+{
+	return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+
+__global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , uint h , uint n , float m )
 {
 	uint ix = qw * blockIdx.x + threadIdx.x;
 	uint iy = qh * blockIdx.y;
@@ -43,7 +60,14 @@ __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , u
 		d = sqrt(d);
 		float t = min( (-b+d)/(2.0f*a) , (-b-d)/(2.0f*a) );
 
-		color = make_uchar3( 0 , -255.0f*t , 0 );
+		float3 q = make_float3( v.x*t + p.x , v.y*t + p.y , v.z*t + p.z );
+		float3 n = make_float3( (2.0f/AA)*q.x , 2.0f/BB*q.y , (2.0f/CC)*q.z );
+		n /= len(n);
+
+/*                float i = pow( dot( n , v ) , m );*/
+		float i =  pow( abs( dot( n , v ) ) , m );
+
+		color = make_uchar3( 200.0f*i+55 , 200.0f*i+55 , 200.0f*i+55 );
 	} else	color = make_uchar3( 0 , 0 , 0 );
 
 

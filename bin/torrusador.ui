@@ -32,7 +32,7 @@
                   <object class="GtkLabel" id="label1">
                     <property name="visible">True</property>
                     <property name="xalign">0.47999998927116394</property>
-                    <property name="label" translatable="yes">R</property>
+                    <property name="label" translatable="yes">a</property>
                   </object>
                   <packing>
                     <property name="x_padding">5</property>
@@ -41,7 +41,7 @@
                 <child>
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">r</property>
+                    <property name="label" translatable="yes">b</property>
                   </object>
                   <packing>
                     <property name="top_attach">1</property>
@@ -52,7 +52,7 @@
                 <child>
                   <object class="GtkLabel" id="label3">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">N</property>
+                    <property name="label" translatable="yes">c</property>
                   </object>
                   <packing>
                     <property name="top_attach">2</property>
@@ -61,22 +61,11 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label4">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">n</property>
-                  </object>
-                  <packing>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                    <property name="x_padding">5</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="sp_R">
+                  <object class="GtkSpinButton" id="sp_a">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">&#x25CF;</property>
-                    <property name="adjustment">adj_R</property>
+                    <property name="adjustment">adj_a</property>
                     <property name="climb_rate">1</property>
                     <property name="digits">2</property>
                     <signal name="value_changed" handler="on_sp_R_value_changed"/>
@@ -87,11 +76,11 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="sp_r">
+                  <object class="GtkSpinButton" id="sp_b">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">&#x25CF;</property>
-                    <property name="adjustment">adj_r</property>
+                    <property name="adjustment">adj_b</property>
                     <property name="climb_rate">1</property>
                     <property name="digits">2</property>
                     <signal name="value_changed" handler="on_sp_r_value_changed"/>
@@ -104,13 +93,13 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="sp_N">
+                  <object class="GtkSpinButton" id="sp_c">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">&#x25CF;</property>
-                    <property name="adjustment">adj_N</property>
+                    <property name="adjustment">adj_c</property>
                     <property name="climb_rate">1</property>
-                    <property name="snap_to_ticks">True</property>
+                    <property name="digits">2</property>
                     <signal name="value_changed" handler="on_sp_N_value_changed"/>
                   </object>
                   <packing>
@@ -121,21 +110,10 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="sp_n">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
-                    <property name="adjustment">adj_n</property>
-                    <property name="climb_rate">1</property>
-                    <property name="snap_to_ticks">True</property>
-                    <signal name="value_changed" handler="on_sp_n_value_changed"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                  </packing>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -248,15 +226,16 @@
                 <child>
                   <object class="GtkLabel" id="label8">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">fov</property>
+                    <property name="label" translatable="yes">m</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="sp_fov">
+                  <object class="GtkSpinButton" id="sp_m">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="invisible_char">&#x25CF;</property>
-                    <property name="adjustment">adj_fov</property>
+                    <property name="adjustment">adj_m</property>
+                    <property name="digits">2</property>
                     <signal name="value_changed" handler="on_sp_fov_value_changed"/>
                   </object>
                   <packing>
@@ -265,29 +244,10 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label9">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">near</property>
-                  </object>
-                  <packing>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
+                  <placeholder/>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="sp_near">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
-                    <property name="adjustment">adjustment1</property>
-                    <signal name="value_changed" handler="on_sp_near_value_changed"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -314,8 +274,8 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <accelerator key="c" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                 <accelerator key="q" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
+                <accelerator key="c" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                 <signal name="clicked" handler="on_but_quit_clicked"/>
               </object>
               <packing>
@@ -334,25 +294,20 @@
       </object>
     </child>
   </object>
-  <object class="GtkAdjustment" id="adj_R">
+  <object class="GtkAdjustment" id="adj_a">
     <property name="upper">100</property>
     <property name="step_increment">0.20000000000000001</property>
-    <property name="page_increment">10</property>
+    <property name="page_increment">1</property>
   </object>
-  <object class="GtkAdjustment" id="adj_r">
+  <object class="GtkAdjustment" id="adj_b">
     <property name="value">8</property>
     <property name="upper">100</property>
     <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="adj_N">
+  <object class="GtkAdjustment" id="adj_c">
     <property name="upper">100</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="adj_n">
-    <property name="upper">100</property>
-    <property name="step_increment">1</property>
+    <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkDialog" id="dialog1">
@@ -494,11 +449,10 @@
       <action-widget response="0">button2</action-widget>
     </action-widgets>
   </object>
-  <object class="GtkAdjustment" id="adj_fov">
-    <property name="lower">1</property>
-    <property name="upper">360</property>
-    <property name="step_increment">5</property>
-    <property name="page_increment">20</property>
+  <object class="GtkAdjustment" id="adj_m">
+    <property name="upper">10000</property>
+    <property name="step_increment">0.050000000000000003</property>
+    <property name="page_increment">0.20000000000000001</property>
   </object>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="upper">100</property>

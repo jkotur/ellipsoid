@@ -6,7 +6,7 @@
 
 class RayCasting {
 public:
-	RayCasting();
+	RayCasting( float a , float b , float c , float m );
 	virtual ~RayCasting();
 
 	void resize( int width , int height );
@@ -15,10 +15,15 @@ public:
 
 	BufferGl*getPixBuff()
 	{	return &pbo; }
+
+	void set_m( float _m )
+	{	m = _m; step=1; }
 	
 private:
 	int width , height , num ;
 	int step;
+
+	float a , b , c , m;
 
 	BufferGl pbo;
 };

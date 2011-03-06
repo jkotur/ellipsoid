@@ -16,6 +16,7 @@
 #include "GlUtils.h"
 
 Application::Application( const std::string& ui_file )
+	: renderer(.33,.75,.5,1.0f)
 {
 	refBuilder = Gtk::Builder::create_from_file(ui_file);
 		
@@ -36,9 +37,13 @@ Application::Application( const std::string& ui_file )
 
 //        refBuilder->get_widget( "statbar"   ,statbar);
 
-//        refBuilder->get_widget( "sp_step"   , sp_step   );
-//        refBuilder->get_widget( "sp_width"  , sp_width  );
-//        refBuilder->get_widget( "sp_height" , sp_height );
+	refBuilder->get_widget( "sp_a" , sp_a );
+	refBuilder->get_widget( "sp_b" , sp_b );
+	refBuilder->get_widget( "sp_c" , sp_c );
+	refBuilder->get_widget( "sp_m" , sp_m );
+
+	sp_m->signal_value_changed()
+		.connect( sigc::mem_fun(*this,&Application::on_m_changed) );
 
 //        Glib::RefPtr<Glib::Object> o = refBuilder->get_object( "timestore" );
 //        ls_time = Glib::RefPtr<Gtk::ListStore>::cast_static(o);
@@ -67,5 +72,11 @@ Application::Application( const std::string& ui_file )
 
 Application::~Application()
 {
+}
+
+void Application::on_m_changed()
+{
+	renderer.set_m( sp_m->get_value() );
+	glArea->queue_draw();
 }
 
