@@ -27,6 +27,12 @@ public:
 	{	pbo = _buf; }
 
 	BufferGl*bufferResize( BufferGl*buf , size_t len );
+
+	void set_timeout( float t )
+	{	timeout = t*1000.0f; }
+
+	virtual void queue_draw();
+	bool refresh();
 protected:
 	void initGLEW();
 
@@ -37,7 +43,11 @@ private:
 	void scene_init();
 	void scene_draw();
 
+	float timeout;
+
 	double boxw , boxh;
+
+	sigc::connection re;
 
 	RayCasting*renderer;
 	BufferGl*pbo;

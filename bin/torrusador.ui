@@ -26,12 +26,11 @@
             <child>
               <object class="GtkTable" id="table1">
                 <property name="visible">True</property>
-                <property name="n_rows">4</property>
+                <property name="n_rows">3</property>
                 <property name="n_columns">2</property>
                 <child>
                   <object class="GtkLabel" id="label1">
                     <property name="visible">True</property>
-                    <property name="xalign">0.47999998927116394</property>
                     <property name="label" translatable="yes">a</property>
                   </object>
                   <packing>
@@ -68,6 +67,7 @@
                     <property name="adjustment">adj_a</property>
                     <property name="climb_rate">1</property>
                     <property name="digits">2</property>
+                    <property name="numeric">True</property>
                     <signal name="value_changed" handler="on_sp_R_value_changed"/>
                   </object>
                   <packing>
@@ -83,6 +83,7 @@
                     <property name="adjustment">adj_b</property>
                     <property name="climb_rate">1</property>
                     <property name="digits">2</property>
+                    <property name="numeric">True</property>
                     <signal name="value_changed" handler="on_sp_r_value_changed"/>
                   </object>
                   <packing>
@@ -100,6 +101,7 @@
                     <property name="adjustment">adj_c</property>
                     <property name="climb_rate">1</property>
                     <property name="digits">2</property>
+                    <property name="numeric">True</property>
                     <signal name="value_changed" handler="on_sp_N_value_changed"/>
                   </object>
                   <packing>
@@ -108,12 +110,6 @@
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -128,6 +124,64 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox3">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkRadioButton" id="rbut_xy">
+                    <property name="label" translatable="yes">x y</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="rbut_xz">
+                    <property name="label" translatable="yes">x z</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">rbut_xy</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="rbut_yz">
+                    <property name="label" translatable="yes">y z</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">rbut_xy</property>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="fill">False</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkHSeparator" id="hseparator4">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child>
@@ -206,7 +260,7 @@
               </object>
               <packing>
                 <property name="fill">False</property>
-                <property name="position">3</property>
+                <property name="position">5</property>
               </packing>
             </child>
             <child>
@@ -215,7 +269,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="position">4</property>
+                <property name="position">6</property>
               </packing>
             </child>
             <child>
@@ -228,6 +282,9 @@
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">m</property>
                   </object>
+                  <packing>
+                    <property name="x_padding">5</property>
+                  </packing>
                 </child>
                 <child>
                   <object class="GtkSpinButton" id="sp_m">
@@ -236,6 +293,7 @@
                     <property name="invisible_char">&#x25CF;</property>
                     <property name="adjustment">adj_m</property>
                     <property name="digits">2</property>
+                    <property name="numeric">True</property>
                     <signal name="value_changed" handler="on_sp_fov_value_changed"/>
                   </object>
                   <packing>
@@ -244,15 +302,36 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
+                  <object class="GtkLabel" id="label4">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">dt</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="x_padding">5</property>
+                  </packing>
                 </child>
                 <child>
-                  <placeholder/>
+                  <object class="GtkSpinButton" id="sp_dt">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="adjustment">adj_dt</property>
+                    <property name="digits">3</property>
+                    <property name="numeric">True</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                  </packing>
                 </child>
               </object>
               <packing>
                 <property name="fill">False</property>
-                <property name="position">5</property>
+                <property name="position">7</property>
               </packing>
             </child>
             <child>
@@ -261,11 +340,8 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="position">6</property>
+                <property name="position">8</property>
               </packing>
-            </child>
-            <child>
-              <placeholder/>
             </child>
             <child>
               <object class="GtkButton" id="but_quit">
@@ -274,8 +350,8 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <accelerator key="q" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                 <accelerator key="c" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
+                <accelerator key="q" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                 <signal name="clicked" handler="on_but_quit_clicked"/>
               </object>
               <packing>
@@ -454,10 +530,9 @@
     <property name="step_increment">0.050000000000000003</property>
     <property name="page_increment">0.20000000000000001</property>
   </object>
-  <object class="GtkAdjustment" id="adjustment1">
-    <property name="upper">100</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-    <property name="page_size">10</property>
+  <object class="GtkAdjustment" id="adj_dt">
+    <property name="upper">10</property>
+    <property name="step_increment">0.01</property>
+    <property name="page_increment">0.10000000000000001</property>
   </object>
 </interface>

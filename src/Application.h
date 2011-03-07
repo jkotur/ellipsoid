@@ -19,6 +19,17 @@ public:
 	void quit()
 	{	Gtk::Main::quit(); }
 protected:
+	bool on_motion(GdkEventMotion* event);
+	bool on_button_press(GdkEventButton* event);
+
+	void on_a_changed();
+	void on_b_changed();
+	void on_c_changed();
+	void on_m_changed();
+	void on_dt_changed();
+
+	float base_x , base_y;
+
 	RayCasting renderer;
 
 	GlDrawingArea*glArea;
@@ -30,8 +41,16 @@ protected:
 	Gtk::SpinButton	*sp_b;
 	Gtk::SpinButton	*sp_c;
 	Gtk::SpinButton	*sp_m;
+	Gtk::SpinButton	*sp_dt;
 
-	void on_m_changed();
+	Gtk::RadioButton *rbut_xy;
+	Gtk::RadioButton *rbut_xz;
+	Gtk::RadioButton *rbut_yz;
+
+	Gtk::RadioButton *rbut_trans;
+	Gtk::RadioButton *rbut_scale;
+	Gtk::RadioButton *rbut_rotate;
+	Gtk::RadioButton *rbut_isoscale;
 
 	Glib::RefPtr<Gtk::ListStore> ls_time;
 

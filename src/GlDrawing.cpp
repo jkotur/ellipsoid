@@ -127,26 +127,39 @@ void GlDrawingArea::scene_init()
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	if( pbo->len != get_width()*get_height() )
-	{
-		int w = ceil((float)get_width()/4.0f)*4;
-		int h = get_height();
+	int w = ceil((float)get_width()/4.0f)*4;
+	int h = get_height();
 
+	if( pbo->len != w*h )
+	{
 		bufferResize( pbo , w*h );
 
 		renderer->resize( w,h );
+
+		if( ! renderer->render_frame( false ) && ! re.connected() )
+			re = Glib::signal_timeout().connect(sigc::mem_fun(*this,&GlDrawingArea::refresh),timeout);
 	}
+}
+
+bool GlDrawingArea::refresh()
+{
+	if( renderer->render_frame() )
+		re.disconnect();
+	else if( !re.connected() )
+		re = Glib::signal_timeout().connect(sigc::mem_fun(*this,&GlDrawingArea::refresh),timeout);
+
+	queue_draw();
+	return true;
+}
+
+void GlDrawingArea::queue_draw()
+{
+	Gtk::DrawingArea::queue_draw();
 }
 
 void GlDrawingArea::scene_draw()
 {
-	log_printf(DBG,"cudownie\n");
-
-	if( ! renderer->render_frame() )
-		Glib::signal_timeout().connect_once(sigc::mem_fun(*this,&GlDrawingArea::queue_draw),1000);
-
 	// FIXME: why the fuck with must be multiplication of 4???
-
 	int w = ceil((float)get_width()/4.0f)*4;
 	int h = get_height();
 
