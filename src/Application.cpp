@@ -18,7 +18,7 @@
 #include "GlUtils.h"
 
 Application::Application( const std::string& ui_file )
-	: renderer(.33,.75,.5,1.0f)
+	: renderer(1,1,1,1)
 {
 	refBuilder = Gtk::Builder::create_from_file(ui_file);
 		
@@ -54,6 +54,13 @@ Application::Application( const std::string& ui_file )
 	refBuilder->get_widget( "rbut_rotate"   , rbut_rotate   );
 	refBuilder->get_widget( "rbut_isoscale" , rbut_isoscale );
 
+	sp_a->set_value(1.0f);
+	sp_b->set_value(1.0f);
+	sp_c->set_value(1.0f);
+	sp_m->set_value(1.0f);
+
+	sp_dt->set_value(0.002f);
+
 	sp_a->signal_value_changed()
 		.connect( sigc::mem_fun(*this,&Application::on_a_changed) );
 	sp_b->signal_value_changed()
@@ -88,8 +95,8 @@ bool Application::on_button_press(GdkEventButton* event)
 {
 	if( event->button != 1 )
 		return true;
-	base_x = -event->x;
-	base_y =  event->y;
+	base_x = event->x;
+	base_y =-event->y;
 }
 
 bool Application::on_motion( GdkEventMotion* event )
@@ -99,17 +106,17 @@ bool Application::on_motion( GdkEventMotion* event )
 	float3 axis2;
 
 	     if( rbut_xy->get_active() ) {
-		diff = make_float3( base_x + event->x , base_y - event->y , 0 );
+		diff = make_float3( base_x - event->x , base_y + event->y , 0 );
 		axis1 = make_float3( 0 , 1 , 0 );
 		axis2 = make_float3( 1 , 0 , 0 );
 	}
 	else if( rbut_xz->get_active() ) {
-		diff = make_float3( base_x + event->x , 0 , base_y - event->y );
+		diff = make_float3( base_x - event->x , 0 , base_y + event->y );
 		axis1 = make_float3( 0 , 0 , 1 );
 		axis2 = make_float3( 1 , 0 , 0 );
 	}
 	else if( rbut_yz->get_active() ) {
-		diff = make_float3( 0 , base_x + event->x , base_y - event->y );
+		diff = make_float3( 0 , base_x - event->x , base_y + event->y );
 		axis1 = make_float3( 0 , 1 , 0 );
 		axis2 = make_float3( 0 , 0 , 1 );
 	}
@@ -123,13 +130,13 @@ bool Application::on_motion( GdkEventMotion* event )
 		renderer.scale( s , s , s );
 	}
 	else if( rbut_rotate->get_active() ) {
-		renderer.rotate(-(base_x+event->x) * .001f , axis1.x , axis1.y , axis1.z );
-		renderer.rotate( (base_y-event->y) * .001f , axis2.x , axis2.y , axis2.z );
+		renderer.rotate(-(base_x-event->x) * .001f , axis1.x , axis1.y , axis1.z );
+		renderer.rotate( (base_y+event->y) * .001f , axis2.x , axis2.y , axis2.z );
 	}
 	else return true;
 
-	base_x =-event->x;
-	base_y = event->y;
+	base_x = event->x;
+	base_y =-event->y;
 
 	renderer.reset();
 	glArea->refresh();

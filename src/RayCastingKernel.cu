@@ -34,18 +34,18 @@ __device__ float dot( const float3& a , const float3& b )
 
 __device__ void
 matmulvec4( float          *product,
-            const float    *a ,
-            const float    *b )
+            const float    *b , /**< vector */
+            const float    *a ) /**< matrix */
 {
 	float vec[4];
 	int i;
 	for (i = 0; i < 4; i++)
-		vec[i] = A(i,0) * B(0,0) + A(i,1) * B(1,0) +
-			 A(i,2) * B(2,0) + A(i,3) * B(3,0);
+		vec[i] = A(0,i) * B(0,0) + A(1,i) * B(1,0) +
+			 A(2,i) * B(2,0) + A(3,i) * B(3,0);
 	memcpy(product,vec,sizeof(float)*4);
 }
 
-__global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , uint h , uint n , Elipsoid e , float*m )
+__global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , uint h , Elipsoid e , float*m )
 {
 	uint ix = qw * blockIdx.x + threadIdx.x;
 	uint iy = qh * blockIdx.y;
@@ -53,19 +53,19 @@ __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , u
 	if( ix >= w ) return;
 
 	float3 p  = make_float3( ((float)(blockIdx.x*qw + qw/2.0f)/(float)w - .5f)*2.0f ,
-				 ((float)(blockIdx.y*qh + qh/2.0f)/(float)h - .5f)*2.0f ,
+				 ((float)(blockIdx.y*qh + qh/2.0f)/(float)h - .5f)*2.0f*h/w ,
 				 0.0f );
 
 	float3 v  = make_float3( 0.0f , 0.0f , 1.0f );
 
 	float tmp[4] = { p.x , p.y , p.z , 1 };
-	matmulvec4( tmp , m , tmp );
+	matmulvec4( tmp , tmp , m );
 	p.x = tmp[0]/tmp[3];
 	p.y = tmp[1]/tmp[3];
 	p.z = tmp[2]/tmp[3];
 
 	tmp[0]=v.x; tmp[1]=v.y; tmp[2]=v.z; tmp[3]=0.0f;
-	matmulvec4( tmp , m , tmp );
+	matmulvec4( tmp , tmp , m );
 	v.x = tmp[0];
 	v.y = tmp[1];
 	v.z = tmp[2];
@@ -80,21 +80,25 @@ __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , u
 
 	float d = b*b - 4*a*c;
 
-	uchar3 color;
+	if( d < 0 ) return;
 
-	if( d >= 0 ) {
-		d = sqrt(d);
-		float t = min( (-b+d)/(2.0f*a) , (-b-d)/(2.0f*a) );
+	d = sqrt(d);
+	float t = min( (-b+d)/(2.0f*a) , (-b-d)/(2.0f*a) );
 
-		float3 q = make_float3( v.x*t + p.x , v.y*t + p.y , v.z*t + p.z );
-		float3 n = make_float3( (2.0f/AA)*q.x , 2.0f/BB*q.y , (2.0f/CC)*q.z );
-		n /= len(n);
+	float3 q = make_float3( v.x*t + p.x , v.y*t + p.y , v.z*t + p.z );
+	float3 n = make_float3( (2.0f/AA)*q.x , 2.0f/BB*q.y , (2.0f/CC)*q.z );
+	n /= len(n);
 
-		float i =  pow( abs( dot( n , v ) ) , e.m );
+	float i =  pow( abs( dot( n , v ) ) , e.m );
 
-		color = make_uchar3( 200.0f*i+55 , 200.0f*i+55 , 200.0f*i+55 );
-	} else	color = make_uchar3( 0 , 0 , 0 );
+	int color;
+	GLubyte*uc = (unsigned char*)&color;
+	uc[0] = 200.0f*i+55;
+	uc[1] = 200.0f*i+55;
+	uc[2] = 200.0f*i+55;
 
+/*        uint idx = (qw * blockIdx.x + (iy+threadIdx.x)*w)*3;*/
+/*        memset( screen + idx , uc[0] , sizeof(unsigned char)*qw*3 );*/
 
 	uint idx;
 	for( uint i = 0 ; i<qh ; i++ )
@@ -103,9 +107,7 @@ __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , u
 
 		idx = (ix + (iy+i)*w)*3;
 
-		screen[idx  ] = color.x;
-		screen[idx+1] = color.y;
-		screen[idx+2] = color.z;
+		memcpy( screen + idx , uc , sizeof(GLubyte)*3 );
 	}
 }
 

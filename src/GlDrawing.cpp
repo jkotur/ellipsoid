@@ -24,7 +24,7 @@
 GlDrawingArea::GlDrawingArea(BaseObjectType*cobject, const Glib::RefPtr<Gtk::Builder>& builder)
 	: Gtk::DrawingArea(cobject),
 	  refBuilder(builder),
-	  pbo(NULL) , boxw(INIT_BOX) , boxh(INIT_BOX)
+	  pbo(NULL) , boxw(INIT_BOX) , boxh(INIT_BOX) , timeout(2.0f)
 {
 	Glib::RefPtr<Gdk::GL::Config> glconfig;
 	glconfig = Gdk::GL::Config::create(
@@ -87,7 +87,7 @@ bool GlDrawingArea::on_configure_event(GdkEventConfigure* event)
 
 	glViewport(0, 0, get_width(), get_height());
 
-	log_printf(DBG,"%p %d %d\n",pbo,get_width(),get_height());
+	log_printf(DBG,"resize: %d %d\n",pbo,get_width(),get_height());
 
 	glwindow->gl_end();
 

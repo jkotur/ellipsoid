@@ -67,7 +67,7 @@ void RayCasting::translate( float x , float y , float z )
 			0, 0, 1, z,
 			0, 0, 0, 1 };
 
-	matmul4( m , m , t );
+	matmul4( m  , t , m);
 }
 
 void RayCasting::scale( float x , float y , float z )
@@ -77,7 +77,7 @@ void RayCasting::scale( float x , float y , float z )
 			0, 0, z, 0,
 			0, 0, 0, 1 };
 
-	matmul4( m , m , s );
+	matmul4( m , s , m );
 }
 
 void RayCasting::rotate( float a , float x , float y , float z )
@@ -93,7 +93,7 @@ void RayCasting::rotate( float a , float x , float y , float z )
 			x*z*(1-c)-y*s , y*z*(1-c)+x*s ,  zz+(1-zz)*c  , 0 ,
 			      0       ,       0       ,       0       , 1 };
 
-	matmul4( m , m , r );
+	matmul4( m , r , m );
 }
 
 void RayCasting::resize( int w , int h )
@@ -109,7 +109,7 @@ void RayCasting::resize( int w , int h )
 	cudaGLMapBufferObject( (void**)&d_ub , pbo.pbo );
 	CUT_CHECK_ERROR("RayCasting::init::cudaGLMapBufferObject");
 
-	cudaMemset( d_ub , 128 , sizeof(GLubyte)*w*h*3 );
+	cudaMemset( d_ub , 0 , sizeof(GLubyte)*w*h*3 );
 	CUT_CHECK_ERROR("RayCasting::init::cudaMemset");
 
 	cudaGLUnmapBufferObject( pbo.pbo );
@@ -134,10 +134,16 @@ bool RayCasting::render_frame( bool next )
 /*        log_printf(DBG,"width %d\theight %d\n",width,height);*/
 /*        log_printf(DBG,"thr: %d\tblk: %d %d\n",threads.x,blocks.x,blocks.y);*/
 
+/*        for( int i=0 ; i<16 ; i++ ) printf("%f%c",m[i],i%4-3?' ':'\n');*/
+/*        printf("\n");*/
+
 	cudaMemcpy( (void**)d_m , (void**)m , sizeof(float)*16 , cudaMemcpyHostToDevice );
 	CUT_CHECK_ERROR("RayCasting::render_frame::cudaMemcpy");
 
-	render_elipsoid<<< blocks , threads >>>( d_ub , std::ceil( (float)width / (float)quads  ) , std::ceil( (float)height / (float)quads  ), width , height  , quads , e , d_m );
+	cudaMemset( d_ub , 0 , sizeof(GLubyte)*width*height*3 );
+	CUT_CHECK_ERROR("RayCasting::render_frame::cudaMemset");
+
+	render_elipsoid<<< blocks , threads >>>( d_ub , std::ceil( (float)width / (float)quads  ) , std::ceil( (float)height / (float)quads  ), width , height , e , d_m );
 	CUT_CHECK_ERROR("RayCasting::render_frame::render_elipsoid");
 
 	cudaGLUnmapBufferObject( pbo.pbo );
