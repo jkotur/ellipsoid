@@ -87,8 +87,6 @@ bool GlDrawingArea::on_configure_event(GdkEventConfigure* event)
 
 	glViewport(0, 0, get_width(), get_height());
 
-	log_printf(DBG,"resize: %d %d\n",pbo,get_width(),get_height());
-
 	glwindow->gl_end();
 
 	return true;
@@ -135,6 +133,10 @@ void GlDrawingArea::scene_init()
 		bufferResize( pbo , w*h );
 
 		renderer->resize( w,h );
+		renderer->reset();
+
+		log_printf(DBG,"resize: %d %d\n",get_width(),get_height());
+
 
 		if( ! renderer->render_frame( false ) && ! re.connected() )
 			re = Glib::signal_timeout().connect(sigc::mem_fun(*this,&GlDrawingArea::refresh),timeout);

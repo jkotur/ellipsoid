@@ -19,10 +19,11 @@
 #define P(row, col) product[(col << 2) + row]
 
 void
-matmul4(float       *product,
+matmul4(float       *res,
         const float *a,
         const float *b)
 {
+	float product[16];
 	int i;
 
 	for (i = 0; i < 4; i++)
@@ -34,6 +35,8 @@ matmul4(float       *product,
 		P(i, 2) = ai0 * B(0, 2) + ai1 * B(1, 2) + ai2 * B(2, 2) + ai3 * B(3, 2);
 		P(i, 3) = ai0 * B(0, 3) + ai1 * B(1, 3) + ai2 * B(2, 3) + ai3 * B(3, 3);
 	}
+	
+	memcpy( res , product , sizeof(float)*16 );
 }
 
 RayCasting::RayCasting( float a , float b , float c , float _m )
@@ -121,18 +124,24 @@ bool RayCasting::render_frame( bool next )
 	unsigned int quads = pow(2,step);
 
 	if( next && (quads < width || quads < height) )
-		quads = pow(2,++step);
+		++step;
 
-	dim3 threads = std::ceil( (float)width / (float)quads  );
-	dim3 blocks  = dim3( quads , quads );
+	dim3 threads;
+	while( (threads = std::ceil( (float)width / (float)(quads=pow(2,step)))).x >= 512 ) ++step;
+
+	unsigned int qw = quads , qh = quads;
+	while( qw > width ) qw >>= 1;
+	while( qh > height) qh >>= 1;
+	qw <<= 1 ; qh <<= 1;
+	dim3 blocks  = dim3( quads , qh );
 
 	GLubyte*d_ub;
 
 	cudaGLMapBufferObject( (void**)&d_ub , pbo.pbo );
 	CUT_CHECK_ERROR("RayCasting::init::cudaGLMapBufferObject");
 
-/*        log_printf(DBG,"width %d\theight %d\n",width,height);*/
-/*        log_printf(DBG,"thr: %d\tblk: %d %d\n",threads.x,blocks.x,blocks.y);*/
+	log_printf(DBG,"width %d\theight %d\n",width,height);
+	log_printf(DBG,"thr: %d\tblk: %d %d\n",threads.x,blocks.x,blocks.y);
 
 /*        for( int i=0 ; i<16 ; i++ ) printf("%f%c",m[i],i%4-3?' ':'\n');*/
 /*        printf("\n");*/
