@@ -31,8 +31,9 @@ __device__ float dot( const float3& a , const float3& b )
 
 #define A(row, col) a[(col << 2) + row]
 #define B(row, col) b[(col << 2) + row]
+#define P(row, col) product[(col << 2) + row]
 
-__device__ void
+__host__ __device__ void
 matmulvec4( float          *product,
             const float    *b , /**< vector */
             const float    *a ) /**< matrix */
@@ -45,6 +46,27 @@ matmulvec4( float          *product,
 	memcpy(product,vec,sizeof(float)*4);
 }
 
+__host__ __device__ void
+matmul4(float       *res,
+        const float *a,
+        const float *b)
+{
+	float product[16];
+	int i;
+
+	for (i = 0; i < 4; i++)
+	{
+		const float ai0 = A(i, 0), ai1 = A(i, 1), ai2 = A(i, 2), ai3 = A(i, 3);
+
+		P(i, 0) = ai0 * B(0, 0) + ai1 * B(1, 0) + ai2 * B(2, 0) + ai3 * B(3, 0);
+		P(i, 1) = ai0 * B(0, 1) + ai1 * B(1, 1) + ai2 * B(2, 1) + ai3 * B(3, 1);
+		P(i, 2) = ai0 * B(0, 2) + ai1 * B(1, 2) + ai2 * B(2, 2) + ai3 * B(3, 2);
+		P(i, 3) = ai0 * B(0, 3) + ai1 * B(1, 3) + ai2 * B(2, 3) + ai3 * B(3, 3);
+	}
+	
+	memcpy( res , product , sizeof(float)*16 );
+}
+
 __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , uint h , Elipsoid e , float*m )
 {
 	uint ix = qw * blockIdx.x + threadIdx.x;
@@ -55,6 +77,8 @@ __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , u
 	float3 p  = make_float3( ((float)(blockIdx.x*qw + qw/2.0f)/(float)w - .5f)*2.0f ,
 				 ((float)(blockIdx.y*qh + qh/2.0f)/(float)h - .5f)*2.0f*h/w ,
 				 0.0f );
+	p.x*=5.0;
+	p.y*=5.0;
 
 	float3 v  = make_float3( 0.0f , 0.0f , 1.0f );
 
@@ -83,7 +107,9 @@ __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , u
 	if( d < 0 ) return;
 
 	d = sqrt(d);
-	float t = min( (-b+d)/(2.0f*a) , (-b-d)/(2.0f*a) );
+	float t = max( (-b+d)/(2.0f*a) , (-b-d)/(2.0f*a) );
+
+	if( t >= 0 ) return;
 
 	float3 q = make_float3( v.x*t + p.x , v.y*t + p.y , v.z*t + p.z );
 	float3 n = make_float3( (2.0f/AA)*q.x , 2.0f/BB*q.y , (2.0f/CC)*q.z );
