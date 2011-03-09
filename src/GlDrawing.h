@@ -32,7 +32,7 @@ public:
 	{	timeout = t*1000.0f; }
 
 	virtual void queue_draw();
-	bool refresh();
+	void refresh();
 protected:
 	void initGLEW();
 
@@ -47,7 +47,8 @@ private:
 
 	double boxw , boxh;
 
-	sigc::connection re;
+//        sigc::connection re;
+	bool ended;
 
 	RayCasting*renderer;
 	BufferGl*pbo;

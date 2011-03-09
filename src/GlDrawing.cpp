@@ -24,7 +24,8 @@
 GlDrawingArea::GlDrawingArea(BaseObjectType*cobject, const Glib::RefPtr<Gtk::Builder>& builder)
 	: Gtk::DrawingArea(cobject),
 	  refBuilder(builder),
-	  pbo(NULL) , boxw(INIT_BOX) , boxh(INIT_BOX) , timeout(2.0f)
+	  pbo(NULL) , boxw(INIT_BOX) , boxh(INIT_BOX) , timeout(2.0f) ,
+	  ended(false)
 {
 	Glib::RefPtr<Gdk::GL::Config> glconfig;
 	glconfig = Gdk::GL::Config::create(
@@ -113,6 +114,9 @@ bool GlDrawingArea::on_expose_event(GdkEventExpose* event)
 	glwindow->gl_end();
 	// *** OpenGL END ***
 
+	if( !ended )
+		Glib::signal_timeout().connect_once(sigc::mem_fun(*this,&GlDrawingArea::refresh),timeout);
+
 	return true;
 }
 
@@ -136,22 +140,15 @@ void GlDrawingArea::scene_init()
 		renderer->reset();
 
 		log_printf(DBG,"resize: %d %d\n",get_width(),get_height());
-
-
-		if( ! renderer->render_frame( false ) && ! re.connected() )
-			re = Glib::signal_timeout().connect(sigc::mem_fun(*this,&GlDrawingArea::refresh),timeout);
 	}
+
+	ended = renderer->render_frame();
 }
 
-bool GlDrawingArea::refresh()
+void GlDrawingArea::refresh()
 {
-	if( renderer->render_frame() )
-		re.disconnect();
-	else if( !re.connected() )
-		re = Glib::signal_timeout().connect(sigc::mem_fun(*this,&GlDrawingArea::refresh),timeout);
-
+	ended = false;
 	queue_draw();
-	return true;
 }
 
 void GlDrawingArea::queue_draw()
