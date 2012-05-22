@@ -77,8 +77,8 @@ __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , u
 	float3 p  = make_float3( ((float)(blockIdx.x*qw + qw/2.0f)/(float)w - .5f)*2.0f ,
 				 ((float)(blockIdx.y*qh + qh/2.0f)/(float)h - .5f)*2.0f*h/w ,
 				 0.0f );
-	p.x*=5.0;
-	p.y*=5.0;
+	p.x*=5.0f;
+	p.y*=5.0f;
 
 	float3 v  = make_float3( 0.0f , 0.0f , 1.0f );
 
@@ -109,7 +109,7 @@ __global__ void render_elipsoid( GLubyte*screen , uint qw , uint qh , uint w , u
 	d = sqrt(d);
 	float t = max( (-b+d)/(2.0f*a) , (-b-d)/(2.0f*a) );
 
-	if( t >= 0 ) return;
+	if( t <= 0 ) return;
 
 	float3 q = make_float3( v.x*t + p.x , v.y*t + p.y , v.z*t + p.z );
 	float3 n = make_float3( (2.0f/AA)*q.x , 2.0f/BB*q.y , (2.0f/CC)*q.z );
